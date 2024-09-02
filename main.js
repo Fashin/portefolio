@@ -1,63 +1,44 @@
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import State from './src/core/State.class';
+import Game from './src/core/Game.class';
+import Map from './src/core/Map.class';
+import Player from './src/core/Player.class';
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-const light = new THREE.AmbientLight(0xffffff); 
-const renderer = new THREE.WebGLRenderer();
-const controls = new OrbitControls( camera, renderer.domElement );
+const state = new State()
+const game = new Game(window, state)
+const player = new Player(window, state)
 
-const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(300, 300).rotateX(-Math.PI * 0.5),
-    new THREE.MeshBasicMaterial({
-        color: new THREE.Color(0xC45B0F).multiplyScalar(1.5)
-    })
-);
+game.init([
+    new Map()
+])
 
-scene.add(ground);
+game.loadModels([
+    {
+        key: 'player',
+        path: '/slime.glb'
+    }
+]) 
 
-scene.background = new THREE.Color('black');
-
-scene.add(light);
-
-renderer.setSize( window.innerWidth, window.innerHeight );
-
-controls.enablePan = false;
-controls.minPolarAngle = THREE.MathUtils.degToRad(45);
-controls.maxPolarAngle = THREE.MathUtils.degToRad(75);
-controls.minDistance = 10;
-controls.maxDistance = 30;
-controls.enableDamping = true;
-
-document.body.appendChild( renderer.domElement );
-
-camera.position.set( 0, 20, 100 );
-
-const loader = new GLTFLoader();
-
-const loadModels = () => {
-    return new Promise((res, rej) => {
-        loader.load( '/slime.glb', res, undefined, rej);
-    })
-}
+const speed = 0.05
 
 function animate() {
-	requestAnimationFrame( animate );
+    const { renderer, scene, camera, controls } = state.getState('document')
+    const player = state.getState('player')
+
+    // TODO : fuck les forêts d'if
+    if (player) {
+        const { forward, left, right, backward } = state.getState('player_control')
+
+        if (forward) player.position.z -= speed
+        if (left) player.position.x -= speed
+        if (right) player.position.x += speed
+        if (backward) player.position.z += speed
+    }
+
+	requestAnimationFrame(animate);
+
     controls.update();
-	renderer.render( scene, camera );
+
+	renderer.render(scene, camera);
 }
 
-try {
-    const gltf = await loadModels()
-
-    console.log(gltf)
-
-    scene.add(gltf.scene)
-
-    animate();
-
-} catch (err) {
-    console.error(err)
-}
-
+animate()
