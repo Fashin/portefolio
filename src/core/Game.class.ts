@@ -15,23 +15,16 @@ export default class Game {
 
     public init(properties: Array<any>): void {
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const light = new THREE.AmbientLight(0xffffff); 
         const renderer = new THREE.WebGLRenderer();
 
+        camera.position.set(0, 2, 5); // Position initiale de la caméra
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
         scene.background = new THREE.Color('black');
         scene.add(light);
-
-        const controls = new OrbitControls( camera, renderer.domElement );
-
-        controls.enablePan = false;
-        controls.minPolarAngle = THREE.MathUtils.degToRad(45);
-        controls.maxPolarAngle = THREE.MathUtils.degToRad(75);
-        controls.minDistance = 10;
-        controls.maxDistance = 30;
-        controls.enableDamping = true;
-
-        camera.position.set( 0, 20, 100 );
 
         renderer.setSize( window.innerWidth, window.innerHeight );
 
@@ -46,19 +39,30 @@ export default class Game {
             scene,
             camera,
             light,
-            controls,
             renderer
         })
+
+        this.window.document.camera = camera
+        this.window.document.renderer = renderer
+        this.window.addEventListener('resize', this.onWindowResize);
+    }
+
+    public onWindowResize() {
+        console.log('window resized !')
+        window.document.camera.aspect = window.innerWidth / window.innerHeight;
+        window.document.camera.updateProjectionMatrix();
+        window.document.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
     public async loadModels(models: Array<Model>) {
         const loader = new GLTFLoader();
-        const scene = this.state.getState('document').scene
+        const { scene } = this.state.getState('document')
 
         try {
             for (let key in models) {
                 const model = await this.loadModel(loader, models[key].path)
                 scene.add(model.scene)
+
                 // TODO : peut être mettre le model complet, besoin des animations plus tard ?
                 this.state.setState(models[key].key, model.scene)
             }

@@ -18,22 +18,19 @@ game.loadModels([
     }
 ])
 
-// TODO : constante de la classe Player quand même
-const speed = 0.05
-
 function animate() {
+    requestAnimationFrame(animate);
+
     const { renderer, scene, camera, controls } = state.getState('document')
     const player = state.getState('player')
 
     if (player)
         controlPlayer.handleMovement(
             state.getState('player_control'),
-            player
+            player,
+            controls,
+            camera
         )
-
-	requestAnimationFrame(animate);
-
-    controls.update();
 
 	renderer.render(scene, camera);
 }

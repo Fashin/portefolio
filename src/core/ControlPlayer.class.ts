@@ -3,7 +3,7 @@ import Movement from "../interface/Movement.interface";
 export default class ControlPlayer {
     MOVING_PROPERTIES: Object
     MOVING_APPLICATION: Object
-    SPEED: number = 0.05
+    SPEED: number = 1
 
     constructor(window: Window, state) {
         window.document.addEventListener('keydown', this.handleKeyEvent);
@@ -32,14 +32,23 @@ export default class ControlPlayer {
         }
     }
 
-    handleMovement(movementProperties: Movement, player: any) {
+    public handleMovement(movementProperties: Movement, player: any, controls: any, camera: any) {
         const movements = Object.keys(movementProperties).filter(prop => (movementProperties[prop]))
 
         for (let i in movements)
-            this.MOVING_APPLICATION[movements[i]](player)            
+            this.MOVING_APPLICATION[movements[i]](player)
+
+        // TODO : gestion de la hauteur/profond configurable (fov + scroll molette)
+        camera.position.set(
+            player.position.x,
+            player.position.y + 10, // gestion de la hauteur de la caméra
+            player.position.z + 15  // gestion de la profondeur de la caméra
+        );
+
+        camera.lookAt(player.position);
     }
 
-    handleKeyEvent(evt) {
+    private handleKeyEvent(evt) {
         if (window.document.MOVING_PROPERTIES.hasOwnProperty(evt.code))
             window.document.MOVING_PROPERTIES[evt.code](evt.type == 'keydown')
     }
