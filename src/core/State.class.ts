@@ -1,5 +1,4 @@
-import GameState from "../state/Game.state";
-
+// TODO : declare some interfaces for cleanup TS use
 export default class State {
     values: Array<any>
 
@@ -7,13 +6,13 @@ export default class State {
         this.values = []
     }
 
-    setState(key: string, value: any): any {
+    public setState(key: string, value: any): any {
         this.values[key] = value
 
         return value
     }
 
-    getState(key: string): any {
+    public getState(key: string): any {
         return this.values[key]
     }
 }

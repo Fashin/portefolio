@@ -1,14 +1,16 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import State from './State.class';
 import Model from '../interface/Model.interface';
+import Setting from './Setting.class';
 
-export default class Game {
+export default class Game extends Setting {
     window: Window
     state: State
 
     constructor(window: Window, state: State) {
+        super(window)
+        
         this.window = window
         this.state = state
     }
@@ -48,7 +50,6 @@ export default class Game {
     }
 
     public onWindowResize() {
-        console.log('window resized !')
         window.document.camera.aspect = window.innerWidth / window.innerHeight;
         window.document.camera.updateProjectionMatrix();
         window.document.renderer.setSize(window.innerWidth, window.innerHeight);
