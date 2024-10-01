@@ -1,11 +1,19 @@
+import * as THREE from 'three';
 import Movement from "../interface/Movement.interface";
+import State from './State.class';
 
 export default class ControlPlayer {
     MOVING_PROPERTIES: Object
     MOVING_APPLICATION: Object
-    SPEED: number = 1
+    SPEED: number = 10
 
-    constructor(window: Window, state) {
+    // Tmp data
+    walkDirection = new THREE.Vector3()
+    rotateAngle = new THREE.Vector3(0, 1, 0)
+    rotateQuarternion: THREE.Quaternion = new THREE.Quaternion()
+    cameraTarget = new THREE.Vector3()
+
+    constructor(window: Window, state: State) {
         window.document.addEventListener('keydown', this.handleKeyEvent);
         window.document.addEventListener('keyup', this.handleKeyEvent);
 
@@ -25,27 +33,71 @@ export default class ControlPlayer {
         }
 
         this.MOVING_APPLICATION = {
-            "forward": (player: any) => (player.position.z -= this.SPEED),
-            "left": (player: any) => (player.position.x -= this.SPEED),
-            "right": (player: any) => (player.position.x += this.SPEED),
-            "backward": (player: any) => (player.position.z += this.SPEED)
+            "forward": () => (0),
+            "forward+left": () => (Math.PI / 4),
+            "left+forward": () => (Math.PI / 4),
+            "forward+right": () => (-Math.PI / 4),
+            "right+forward": () => (-Math.PI / 4),
+            "backward": () => (Math.PI),
+            "backward+left": () => (Math.PI / 4 + Math.PI / 2 ),
+            "left+backward": () => (Math.PI / 4 + Math.PI / 2 ),
+            "backward+right": () => (-Math.PI / 4 - Math.PI / 2),
+            "right+backward": () => (-Math.PI / 4 - Math.PI / 2),
+            "left": () => (Math.PI / 2),
+            "right": () => (-Math.PI / 2),
         }
     }
 
-    public handleMovement(movementProperties: Movement, player: any, controls: any, camera: any) {
-        const movements = Object.keys(movementProperties).filter(prop => (movementProperties[prop]))
+    public handleMovement(
+        movementProperties: Movement,
+        player: any,
+        camera: any,
+        player_animation: any,
+        controls: any,
+        delta: any
+    )
+        {
+        const movements = Object.keys(movementProperties).filter(prop => (movementProperties[prop])).join('+')
 
-        for (let i in movements)
-            this.MOVING_APPLICATION[movements[i]](player)
+        // User dont move
+        if (movements.length === 0 || !this.MOVING_APPLICATION.hasOwnProperty(movements)) {
+            player_animation.reset().fadeIn(.2).play()
+            
+            return;
+        }
+        else 
+            player_animation.fadeOut(.2)
 
-        // TODO : gestion de la hauteur/profond configurable (fov + scroll molette)
-        camera.position.set(
-            player.position.x,
-            player.position.y + 10, // gestion de la hauteur de la caméra
-            player.position.z + 15  // gestion de la profondeur de la caméra
-        );
+        const angleYCameraDirection = Math.atan2(
+            (camera.position.x - player.position.x), 
+            (camera.position.z - player.position.z)
+        )
 
-        camera.lookAt(player.position);
+        const directionOffset = this.MOVING_APPLICATION[movements]()
+
+        // rotate model
+        this.rotateQuarternion.setFromAxisAngle(this.rotateAngle, angleYCameraDirection + directionOffset)
+        player.quaternion.rotateTowards(this.rotateQuarternion, 0.2)
+
+        camera.getWorldDirection(this.walkDirection)
+        this.walkDirection.y = 0
+        this.walkDirection.normalize()
+        this.walkDirection.applyAxisAngle(this.rotateAngle, directionOffset)
+
+        const moveX = this.walkDirection.x * this.SPEED * delta
+        const moveZ = this.walkDirection.z * this.SPEED * delta
+        player.position.x += moveX
+        player.position.z += moveZ
+        
+        // move camera
+        camera.position.x += moveX
+        camera.position.z += moveZ
+
+        // update camera target
+        this.cameraTarget.x = player.position.x
+        this.cameraTarget.y = player.position.y + 1
+        this.cameraTarget.z = player.position.z
+        controls.target = this.cameraTarget
     }
 
     private handleKeyEvent(evt) {

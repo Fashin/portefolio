@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import State from './State.class';
 import Model from '../interface/Model.interface';
 import Setting from './Setting.class';
@@ -21,32 +22,37 @@ export default class Game extends Setting {
         const light = new THREE.AmbientLight(0xffffff); 
         const renderer = new THREE.WebGLRenderer();
 
-        camera.position.set(0, 2, 5); // Position initiale de la caméra
+        camera.position.set(0, 5, -10); // Position initiale de la caméra
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
 
-        scene.background = new THREE.Color('black');
+        scene.background = new THREE.TextureLoader().load('/materials/background.jpg')
         scene.add(light);
 
-        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.setSize(window.innerWidth, window.innerHeight);
 
-        this.window.document.body.appendChild( renderer.domElement );
+        this.window.document.body.appendChild(renderer.domElement);
 
-        renderer.render(scene, camera)
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 1, 0);
+        camera.position.set(0, 5, -10);
 
         for (let key in properties)
-            scene.add(properties[key].init())
+            scene.add(properties[key].init(scene))
 
         this.state.setState('document', {
             scene,
             camera,
             light,
-            renderer
+            renderer,
+            controls
         })
 
         this.window.document.camera = camera
         this.window.document.renderer = renderer
         this.window.addEventListener('resize', this.onWindowResize);
+
+        renderer.render(scene, camera)
     }
 
     public onWindowResize() {
@@ -58,21 +64,39 @@ export default class Game extends Setting {
     public async loadModels(models: Array<Model>) {
         const loader = new GLTFLoader();
         const { scene } = this.state.getState('document')
+        const mixer = new THREE.AnimationMixer(scene)
 
         try {
             for (let key in models) {
                 const model = await this.loadModel(loader, models[key].path)
                 scene.add(model.scene)
 
-                // TODO : peut être mettre le model complet, besoin des animations plus tard ?
-                this.state.setState(models[key].key, model.scene)
+                if (models[key].scale) {
+                    const scale = models[key].scale
+                    model.scene.scale.set(scale[0], scale[1], scale[2])
+                }
+
+                if (models[key].animations) {
+                    const animation = mixer.clipAction(model.animations[0], model.scene)
+                    this.state.setState(models[key].name + '_animation', animation)
+                }
+
+                if (models[key].position) {
+                    model.scene.position.x = models[key].position.x
+                    model.scene.position.y = models[key].position.y
+                    model.scene.position.z = models[key].position.z
+                }
+
+                this.state.setState(models[key].name, model.scene)   
             }
+
+            this.state.setState('mixer', mixer)
         } catch (err) {
             console.error(err)
         }
     }
 
-    private loadModel(loader, modelPath): any {
+    private loadModel(loader: GLTFLoader, modelPath: string): any {
         return new Promise((res, rej) => {
             loader.load(modelPath, res, undefined, rej);
         })

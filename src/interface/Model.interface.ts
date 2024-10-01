@@ -1,4 +1,9 @@
+import * as THREE from 'three';
+
 export default interface Model {
-    key: string,
-    path: string
+    name: string,
+    path: string,
+    scale: Array<Number>|null,
+    animations: Boolean,
+    position: THREE.Vector3
 }

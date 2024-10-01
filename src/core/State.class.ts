@@ -1,4 +1,3 @@
-// TODO : declare some interfaces for cleanup TS use
 export default class State {
     values: Array<any>
 
