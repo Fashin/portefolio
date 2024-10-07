@@ -5,7 +5,7 @@ import State from './State.class';
 export default class ControlPlayer {
     MOVING_PROPERTIES: Object
     MOVING_APPLICATION: Object
-    SPEED: number = 10
+    SPEED: number = 50
 
     // Tmp data
     walkDirection = new THREE.Vector3()

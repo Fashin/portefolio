@@ -1,7 +1,6 @@
 import State from './src/core/State.class';
 import Game from './src/core/Game.class';
 import ControlPlayer from './src/core/ControlPlayer.class';
-
 import Map from './src/components/Map.class';
 
 import * as THREE from 'three';
@@ -11,14 +10,12 @@ const game = new Game(window, state)
 const controlPlayer = new ControlPlayer(window, state)
 const clock = new THREE.Clock()
 
-game.init([
-    new Map()
-])
+game.init()
 
 game.loadModels([
     {
         name: 'player',
-        path: '/player1.0.glb',
+        path: '/player.glb',
         scale: [.5, .5, .5],
         animations: true
     },
@@ -27,6 +24,18 @@ game.loadModels([
         path: '/batiment_musee.glb',
         scale: [1, 1, 1],
         position: new THREE.Vector3(0, -4, 200)
+    },
+    {
+        name: 'garden',
+        path: '/jardin.glb',
+        scale: [.2, .2, .2],
+        hide: true
+    },
+    {
+        name: 'fence',
+        path: '/fence.glb',
+        scale: [1, 1, 1],
+        hide: true
     }
 ])
 
@@ -37,22 +46,26 @@ function animate() {
     const player = state.getState('player')
     const player_animation = state.getState('player_animation')
     const player_control = state.getState('player_control')
+    const loaders = state.getState('loaders')
     const mixer = state.getState('mixer')
     const delta = clock.getDelta();
 
-    if (player) {  
-        controlPlayer.handleMovement(
-            player_control,
-            player,
-            camera,
-            player_animation,
-            controls,
-            delta
-        )
-    }
+    if (!loaders || !loaders.models) return;
 
-    if (mixer)
-        mixer.update(delta)
+    if (!loaders.has_map_loaded) new Map(state)
+
+    if (!loaders.has_hide_loader) game.hideLoader()
+
+    controlPlayer.handleMovement(
+        player_control,
+        player,
+        camera,
+        player_animation,
+        controls,
+        delta
+    )
+
+    mixer.update(delta)
 
     controls.update();
 

@@ -72,3 +72,34 @@ body { margin: 0; }
 #setting .container .setting-item input:focus {
     outline: none;
 }
+
+#loader-container {
+    background: rgb(30 41 59);
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#loader-icon {
+    border: 32px solid #f3f3f3; /* Light grey */
+    border-top: 32px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 240px;
+    height: 240px;
+    animation: spin 2s linear infinite;
+}
+
+#loader-text {
+    color: white;
+    font-size: 32px;
+    margin-top: 24px;
+}
+
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

@@ -37,9 +37,6 @@ export default class Game extends Setting {
         controls.target.set(0, 1, 0);
         camera.position.set(0, 5, -10);
 
-        for (let key in properties)
-            scene.add(properties[key].init(scene))
-
         this.state.setState('document', {
             scene,
             camera,
@@ -69,7 +66,9 @@ export default class Game extends Setting {
         try {
             for (let key in models) {
                 const model = await this.loadModel(loader, models[key].path)
-                scene.add(model.scene)
+
+                if (!models[key].hide)
+                    scene.add(model.scene)
 
                 if (models[key].scale) {
                     const scale = models[key].scale
@@ -87,13 +86,20 @@ export default class Game extends Setting {
                     model.scene.position.z = models[key].position.z
                 }
 
-                this.state.setState(models[key].name, model.scene)   
+                this.state.setState(models[key].name, model.scene)
             }
 
             this.state.setState('mixer', mixer)
+            this.state.setState('loaders', { models: true })
         } catch (err) {
             console.error(err)
         }
+    }
+
+    public hideLoader() {
+        document.getElementById('loader-container').style.display = "none"
+
+        this.state.setState('loaders', {...this.state.getState('loaders'), ...{ has_hide_loader: true }})
     }
 
     private loadModel(loader: GLTFLoader, modelPath: string): any {
