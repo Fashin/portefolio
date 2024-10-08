@@ -11,7 +11,15 @@ export default class State {
         return value
     }
 
-    public getState(key: string): any {
-        return this.values[key]
+    public getState(key: string, valueIfEmpty = null): any {
+        return this.values[key] ?? valueIfEmpty
+    }
+
+    public getModel(name: string): any {
+        return this.values['models'].filter(model => model.name === name)[0] ?? null
+    }
+
+    public getModelsWithoutPlayer(): any {
+        return this.values['models'].filter(model => model.name !== 'player')
     }
 }

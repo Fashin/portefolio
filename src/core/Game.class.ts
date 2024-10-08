@@ -86,7 +86,14 @@ export default class Game extends Setting {
                     model.scene.position.z = models[key].position.z
                 }
 
-                this.state.setState(models[key].name, model.scene)
+                this.state.setState('models', [
+                    ...this.state.getState('models', []),
+                    {
+                        name: models[key].name,
+                        scene: model.scene,
+                        hitbox: !models[key].hide ? new THREE.Box3().setFromObject(model.scene) : null
+                    }
+                ])
             }
 
             this.state.setState('mixer', mixer)

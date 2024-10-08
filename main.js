@@ -26,12 +26,6 @@ game.loadModels([
         position: new THREE.Vector3(0, -4, 200)
     },
     {
-        name: 'garden',
-        path: '/jardin.glb',
-        scale: [.2, .2, .2],
-        hide: true
-    },
-    {
         name: 'fence',
         path: '/fence.glb',
         scale: [1, 1, 1],
@@ -43,9 +37,6 @@ function animate() {
     requestAnimationFrame(animate);
 
     const { renderer, scene, camera, controls } = state.getState('document')
-    const player = state.getState('player')
-    const player_animation = state.getState('player_animation')
-    const player_control = state.getState('player_control')
     const loaders = state.getState('loaders')
     const mixer = state.getState('mixer')
     const delta = clock.getDelta();
@@ -56,14 +47,7 @@ function animate() {
 
     if (!loaders.has_hide_loader) game.hideLoader()
 
-    controlPlayer.handleMovement(
-        player_control,
-        player,
-        camera,
-        player_animation,
-        controls,
-        delta
-    )
+    controlPlayer.handleMovement(state, camera, controls, delta)
 
     mixer.update(delta)
 
