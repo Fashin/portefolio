@@ -49,7 +49,7 @@ export default class ControlPlayer {
 
     public handleMovement(state: any, camera: any, controls: any, delta: any) {
         const player_control = state.getState('player_control')
-        const models = state.getModelsWithoutPlayer()
+        const models = state.getModelsWithoutPlayer().filter(model => model.hitbox)
         const player = state.getModel('player')
         const player_animation = state.getState('player_animation')
         const movements = Object.keys(player_control).filter(prop => (player_control[prop])).join('+')
@@ -70,19 +70,14 @@ export default class ControlPlayer {
 
         const directionOffset = this.MOVING_APPLICATION[movements]
 
-        for (let i in models) {
-            if (models[i].hitbox && player.hitbox.intersectsBox(models[i].hitbox)) {
-                camera.position.x = 0
-                camera.position.z = 0
-                player.scene.position.x = 0
-                player.scene.position.z = 0
-                this.cameraTarget.x = player.scene.position.x
-                this.cameraTarget.y = player.scene.position.y + 1
-                this.cameraTarget.z = player.scene.position.z
-                controls.target = this.cameraTarget
-                player.hitbox.setFromObject(player.scene)
+        let moveDelta = this.SPEED * delta
 
-                return;
+        for (let i in models) {
+            if (player.hitbox.intersectsBox(models[i].hitbox)) {
+                if (models[i].name !== 'teleport')
+                    moveDelta = -10
+                else
+                    this.teleport(40, 0, 1010, camera, player, controls)                
             }
         }
 
@@ -95,8 +90,8 @@ export default class ControlPlayer {
         this.walkDirection.normalize()
         this.walkDirection.applyAxisAngle(this.rotateAngle, directionOffset)
 
-        const moveX = this.walkDirection.x * this.SPEED * delta
-        const moveZ = this.walkDirection.z * this.SPEED * delta
+        const moveX = this.walkDirection.x * moveDelta
+        const moveZ = this.walkDirection.z * moveDelta
         player.scene.position.x += moveX
         player.scene.position.z += moveZ
         
@@ -110,6 +105,20 @@ export default class ControlPlayer {
         this.cameraTarget.z = player.scene.position.z
         controls.target = this.cameraTarget
 
+        player.hitbox.setFromObject(player.scene)
+    }
+
+    private teleport(x: Number, y: Number, z: Number, camera: any, player: any, controls: any) {
+        camera.position.x = x
+        camera.position.y = 5
+        camera.position.z = z - 10
+        player.scene.position.x = x
+        player.scene.position.y = y
+        player.scene.position.z = z
+        this.cameraTarget.x = player.scene.position.x
+        this.cameraTarget.y = player.scene.position.y + 1
+        this.cameraTarget.z = player.scene.position.z
+        controls.target = this.cameraTarget
         player.hitbox.setFromObject(player.scene)
     }
 

@@ -8,6 +8,7 @@ export default class Map {
         // generate ground
         const groundTexture = new THREE.TextureLoader().load('/materials/ground.png')
         const roadTexture = new THREE.TextureLoader().load('/materials/road.jpg')
+        const parquetTexture = new THREE.TextureLoader().load('/materials/parquet.png')
 
         for (let i = -400; i < 400; i += 20) {
             for (let j = -400; j < 400; j += 20) {
@@ -71,6 +72,10 @@ export default class Map {
         boxES.rotation.y = rotateES
         boxES.position.x = -360
         boxES.position.y = 50
+
+        scene.add(boxOS)
+        scene.add(boxOE)
+        scene.add(boxES)
     
         const fences_hitbox = [
             {
@@ -90,13 +95,109 @@ export default class Map {
             }
         ]
 
-        scene.add(boxOS)
-        scene.add(boxOE)
-        scene.add(boxES)
+        //hitbox for teleport
+        const tpGeometry = new THREE.BoxGeometry(80, 100)
+        const tpMaterial = new THREE.MeshBasicMaterial({ transparent: true, color: 0x000000, opacity: 0 })
+        const boxTP = new THREE.Mesh(tpGeometry, tpMaterial)
+        boxTP.position.z = 140
+
+        scene.add(boxTP)
+
+        // ground for interior of museum
+        for (let i = 0; i < 400; i += 10) {
+            for (let j = 0; j < 80; j += 10) {
+                const interiorGround =  new THREE.Mesh(
+                    new THREE.PlaneGeometry(10, 10).rotateX(-Math.PI * 0.5),
+                    new THREE.MeshBasicMaterial({
+                        map: parquetTexture
+                    })
+                )
+
+                interiorGround.position.x = j
+                interiorGround.position.z = 1000 + i
+
+                scene.add(interiorGround)
+            }
+        }
+
+        // wall for interior of museum
+        let wall_hitboxs: Array<any> = []
+        const wallTexture = new THREE.TextureLoader().load('/materials/marble.png')
+        wallTexture.repeat.set(10, 10)
+        wallTexture.wrapS = THREE.RepeatWrapping
+        wallTexture.wrapT = THREE.RepeatWrapping 
+
+        const wallMaterial = new THREE.MeshBasicMaterial({ map: wallTexture })
+        const wallGeometry = new THREE.BoxGeometry(80, 50)
+
+        for (let i = 1040; i < 1400; i += 80) {
+            const ouestWall = new THREE.Mesh(wallGeometry, wallMaterial)
+            const estWall = new THREE.Mesh(wallGeometry, wallMaterial)
+
+            ouestWall.position.x = 75
+            ouestWall.position.y = 25
+            ouestWall.position.z = i
+            ouestWall.rotation.y = Math.PI / 2
+
+            estWall.position.x = -5
+            estWall.position.y = 25
+            estWall.position.z = i
+            estWall.rotation.y = Math.PI / 2
+
+            wall_hitboxs = [
+                ...wall_hitboxs,
+                {
+                    name: 'wall_o_' + i,
+                    scene: ouestWall,
+                    hitbox: new THREE.Box3().setFromObject(ouestWall)
+                },
+                {
+                    name: 'wall_e_' + i,
+                    scene: estWall,
+                    hitbox: new THREE.Box3().setFromObject(estWall)
+                }
+            ]
+            scene.add(ouestWall)
+            scene.add(estWall)
+        }
+        
+        const southWall = new THREE.Mesh(wallGeometry, wallMaterial)
+        const northWall = new THREE.Mesh(wallGeometry, wallMaterial)
+
+        southWall.position.x = 35
+        southWall.position.y = 25
+        southWall.position.z = 1000
+
+        northWall.position.x = 35
+        northWall.position.y = 25
+        northWall.position.z = 1390
+
+        wall_hitboxs = [
+            ...wall_hitboxs,
+            {
+                name: 'wall_s',
+                scene: southWall,
+                hitbox: new THREE.Box3().setFromObject(southWall)
+            },
+            {
+                name: 'wall_n',
+                scene: northWall,
+                hitbox: new THREE.Box3().setFromObject(northWall)
+            }
+        ]
+        
+        scene.add(southWall)
+        scene.add(northWall)
 
         state.setState('models', [
             ...state.getState('models'),
-            ...fences_hitbox
+            ...fences_hitbox,
+            ...wall_hitboxs,
+            {
+                name: 'teleport',
+                scene: boxTP,
+                hitbox: new THREE.Box3().setFromObject(boxTP)
+            }
         ])
 
         state.setState('loaders', { ...state.getState('loaders'), ...{has_map_loaded: true }})
