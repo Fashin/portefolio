@@ -5,6 +5,6 @@ export default interface Model {
     path: string,
     scale: Array<Number>|null,
     animations: Boolean,
-    position: THREE.Vector3,
+    position: THREE.Vector3|Boolean,
     hide: Boolean
 }

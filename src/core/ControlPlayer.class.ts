@@ -49,7 +49,7 @@ export default class ControlPlayer {
 
     public handleMovement(state: any, camera: any, controls: any, delta: any) {
         const player_control = state.getState('player_control')
-        const models = state.getModelsWithoutPlayer().filter(model => model.hitbox)
+        const models = state.getModelsWithHitbox()
         const player = state.getModel('player')
         const player_animation = state.getState('player_animation')
         const movements = Object.keys(player_control).filter(prop => (player_control[prop])).join('+')

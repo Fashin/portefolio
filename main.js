@@ -5,6 +5,9 @@ import Map from './src/components/Map.class';
 
 import * as THREE from 'three';
 
+import { models } from './src/config/models';
+import Label from './src/core/Label.class';
+
 const state = new State()
 const game = new Game(window, state)
 const controlPlayer = new ControlPlayer(window, state)
@@ -12,26 +15,7 @@ const clock = new THREE.Clock()
 
 game.init()
 
-game.loadModels([
-    {
-        name: 'player',
-        path: '/player.glb',
-        scale: [.5, .5, .5],
-        animations: true
-    },
-    {
-        name: 'musee',
-        path: '/batiment_musee.glb',
-        scale: [1, 1, 1],
-        position: new THREE.Vector3(0, -4, 200)
-    },
-    {
-        name: 'fence',
-        path: '/fence.glb',
-        scale: [1, 1, 1],
-        hide: true
-    }
-])
+game.loadModels(models)
 
 function animate() {
     requestAnimationFrame(animate);
@@ -44,6 +28,8 @@ function animate() {
     if (!loaders || !loaders.models) return;
 
     if (!loaders.has_map_loaded) new Map(state)
+
+    if (!loaders.has_handle_labels) new Label(state)
 
     if (!loaders.has_hide_loader) game.hideLoader()
 

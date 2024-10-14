@@ -22,4 +22,12 @@ export default class State {
     public getModelsWithoutPlayer(): any {
         return this.values['models'].filter(model => model.name !== 'player')
     }
+
+    public getModelsWithHitbox(): any {
+        return this.getModelsWithoutPlayer().filter(model => model.hitbox)
+    }
+
+    public getLabels(): any {
+        return this.getModelsWithoutPlayer().filter(model => model.name.startsWith('label_'))
+    }
 }

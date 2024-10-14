@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import State from '../core/State.class';
+import { projects } from '../config/projects';
+import { cover } from 'three/src/extras/TextureUtils.js';
 
 export default class Map {
     public constructor(state: State) {
@@ -9,6 +11,7 @@ export default class Map {
         const groundTexture = new THREE.TextureLoader().load('/materials/ground.png')
         const roadTexture = new THREE.TextureLoader().load('/materials/road.jpg')
         const parquetTexture = new THREE.TextureLoader().load('/materials/parquet.png')
+        const goldTexture = new THREE.TextureLoader().load('/materials/gold.png')
 
         for (let i = -400; i < 400; i += 20) {
             for (let j = -400; j < 400; j += 20) {
@@ -189,10 +192,44 @@ export default class Map {
         scene.add(southWall)
         scene.add(northWall)
 
+        // paint for interior of museum
+        const paint = state.getModel('paint').scene
+        
+
+        let labels: Array<any> = []
+
+        for (let i in projects) {
+            const labelMaterial = new THREE.MeshBasicMaterial({ map: goldTexture })
+            const labelGeometry = new THREE.BoxGeometry(3, 1, 0.2)
+            const labelMesh = new THREE.Mesh(labelGeometry, labelMaterial)
+
+            const isRight = i % 2 === 0
+            const { nPaint, nLabel } = this.addNewPaint(
+                paint.clone(),
+                labelMesh,
+                isRight,
+                isRight ? 75 : -5,
+                1050 + (i * 20),
+                isRight ? Math.PI / 2 : -Math.PI / 2,
+                isRight ? Math.PI : false,
+                projects[i]
+            )
+
+            labels.push({
+                name: 'label_' + i,
+                scene: nLabel,
+                project: projects[i]
+            })
+
+            scene.add(nLabel)
+            scene.add(nPaint)
+        }
+
         state.setState('models', [
             ...state.getState('models'),
             ...fences_hitbox,
             ...wall_hitboxs,
+            ...labels,
             {
                 name: 'teleport',
                 scene: boxTP,
@@ -201,5 +238,37 @@ export default class Map {
         ])
 
         state.setState('loaders', { ...state.getState('loaders'), ...{has_map_loaded: true }})
+    }
+
+    private addNewPaint(nPaint, nLabel, isRight, x, z, pRotateZ, tRotate, project) {
+        const nPaintMaterial = new THREE.MeshBasicMaterial({
+            map: new THREE.TextureLoader().load(project.picture, tex => {
+                tex.center = new THREE.Vector2(.5, .5)
+                tex.repeat.set(2, 2);
+                tex.rotation = tRotate
+                tex.needsUpdate = true;
+            })
+        })
+        
+        nPaint.position.x = x
+        nPaint.position.y = 5
+        nPaint.position.z = z
+        nPaint.rotation.z = pRotateZ
+
+        nLabel.position.x = isRight ? x - 1 : x + 1
+        nLabel.position.y = 5
+        nLabel.position.z = z + 8
+        nLabel.rotation.y = pRotateZ
+
+        nPaint.traverse(obj => {
+            if (obj.isMesh && obj.material.name === "painting") {
+                obj.material = nPaintMaterial
+            }
+        })
+
+        return {
+            nPaint,
+            nLabel
+        }
     }
 }
