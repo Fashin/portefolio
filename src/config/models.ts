@@ -5,33 +5,19 @@ export const models: Array<Model> = [
     {
         name: 'player',
         path: '/models/player.glb',
-        scale: [.5, .5, .5],
+        scale: [.2, .2, .2],
         animations: true,
+        position: new THREE.Vector3(0, 37.6, 0),
+        hide: false,
+        castShadow: false
+    },
+    {
+        name: 'cliff',
+        path: '/models/cliff.glb',
+        scale: [20, 20, 20],
+        animations: false,
         position: false,
-        hide: false
-    },
-    {
-        name: 'musee',
-        path: '/models/batiment_musee.glb',
-        scale: [1, 1, 1],
-        position: new THREE.Vector3(0, -4, 200),
-        animations: false,
-        hide: false
-    },
-    {
-        name: 'fence',
-        path: '/models/fence.glb',
-        scale: [1, 1, 1],
-        hide: true,
-        animations: false,
-        position: false
-    },
-    {
-        name: 'paint',
-        path: '/models/paint.glb',
-        scale: [1, 1, 1],
-        hide: true,
-        animations: false,
-        position: false
+        hide: false,
+        castShadow: true
     }
 ]

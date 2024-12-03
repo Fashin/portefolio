@@ -37,11 +37,13 @@ export default class ControlPlayer {
             "left+forward": Math.PI / 4,
             "forward+right": -Math.PI / 4,
             "right+forward": -Math.PI / 4,
+            
             "backward": Math.PI,
-            "backward+left": Math.PI / 4,
-            "left+backward": Math.PI / 4,
-            "backward+right": -Math.PI / 4,
-            "right+backward": -Math.PI / 4,
+            "backward+left": Math.PI - Math.PI / 4,
+            "left+backward": Math.PI - Math.PI / 4,
+            "backward+right": Math.PI + Math.PI / 4,
+            "right+backward": Math.PI + Math.PI / 4,
+            
             "left": Math.PI / 2,
             "right": -Math.PI / 2
         }
@@ -71,15 +73,6 @@ export default class ControlPlayer {
         const directionOffset = this.MOVING_APPLICATION[movements]
 
         let moveDelta = this.SPEED * delta
-
-        for (let i in models) {
-            if (player.hitbox.intersectsBox(models[i].hitbox)) {
-                if (models[i].name !== 'teleport')
-                    moveDelta = -10
-                else
-                    this.teleport(40, 0, 1010, camera, player, controls)                
-            }
-        }
 
         // rotate model
         this.rotateQuarternion.setFromAxisAngle(this.rotateAngle, angleYCameraDirection + directionOffset)

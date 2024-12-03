@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { Water } from 'three/addons/objects/Water.js';
 import State from './State.class';
 import Model from '../interface/Model.interface';
 import Setting from './Setting.class';
@@ -19,30 +20,57 @@ export default class Game extends Setting {
     public init(): void {
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const light = new THREE.AmbientLight(0xffffff); 
         const renderer = new THREE.WebGLRenderer();
+
+        // Skybox
+        const light = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1.5);
+        light.color.setHSL( 0.6, 1, 0.6 );
+        light.groundColor.setHSL( 0.095, 1, 0.75 );
+        light.position.set( 0, 50, 0 );
+        scene.add(light);
+
+        scene.background = new THREE.TextureLoader().load('/materials/background.jpg')
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+        // Water
+        const waterGeometry = new THREE.PlaneGeometry( 10000, 10000 );
+        const water = new Water(
+            waterGeometry,
+            {
+                textureWidth: 512,
+                textureHeight: 512,
+                waterNormals: new THREE.TextureLoader().load('/materials/waternormals.jpg', ( texture ) => {
+                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+                }),
+                sunDirection: new THREE.Vector3(),
+                sunColor: 0xffffff,
+                waterColor: 0x001e0f,
+                distortionScale: 3.7,
+                fog: scene.fog !== undefined
+            }
+        );
+        water.rotation.x = - Math.PI / 2;
+		scene.add( water );
 
         camera.position.set(0, 5, -10); // Position initiale de la caméra
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
-
-        scene.background = new THREE.TextureLoader().load('/materials/background.jpg')
-        scene.add(light);
-
+        
         renderer.setSize(window.innerWidth, window.innerHeight);
 
         this.window.document.body.appendChild(renderer.domElement);
 
         const controls = new OrbitControls(camera, renderer.domElement);
-        controls.target.set(0, 1, 0);
-        camera.position.set(0, 5, -10);
+        controls.target.set(0, 41, 0);
+        camera.position.set(0, 45, -10);
 
         this.state.setState('document', {
             scene,
             camera,
             light,
             renderer,
-            controls
+            controls,
+            water
         })
 
         this.window.document.camera = camera
@@ -85,6 +113,14 @@ export default class Game extends Setting {
                     model.scene.position.y = models[key].position.y
                     model.scene.position.z = models[key].position.z
                 }
+
+                if (models[key].castShadow)
+                    model.scene.traverse(function (child) {
+                        if (child.isMesh) {
+                            child.castShadow = true
+                            child.receiveShadow = true
+                        }
+                    })
 
                 this.state.setState('models', [
                     ...this.state.getState('models', []),
