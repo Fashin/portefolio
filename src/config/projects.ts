@@ -1,32 +1,11 @@
-import Project from '../interface/Project.interface'
-
-export const projects: Array<Project> = [
+export const projects = [
     {
-        name: 'Bluesquare',
-        url: 'www.bluesquare.io',
-        description: "TODO : trouver quoi écrire ici ptdr",
-        picture: '/logo/bluesquare.png',
-        size: [500, 500]
-    },
-    {
-        name: 'Bluesquare 2',
-        url: 'www.bluesquare.io',
-        description: "TODO : trouver quoi écrire ici ptdr",
-        picture: '/logo/bluesquare.png',
-        size: [500, 500]
-    },
-    {
-        name: 'Bluesquare 3',
-        url: 'www.bluesquare.io',
-        description: "TODO : trouver quoi écrire ici ptdr",
-        picture: '/logo/bluesquare.png',
-        size: [500, 500]
-    },
-    {
-        name: 'Bluesquare 4',
-        url: 'www.bluesquare.io',
-        description: "TODO : trouver quoi écrire ici ptdr",
-        picture: '/logo/bluesquare.png',
-        size: [500, 500]
+        title: 'Bluesquare',
+        picture: 'bluesquare.png',
+        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem pariatur dignissimos, autem repellat, suscipit nisi placeat fugiat dicta rem a alias voluptates inventore odit facere deserunt dolore molestiae laboriosam. Officia?',
+        website: {
+            url: 'www.bluesquare.io',
+            text: 'www.bluesquare.io'
+        }
     }
 ]

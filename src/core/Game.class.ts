@@ -2,17 +2,15 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { Water } from 'three/addons/objects/Water.js';
+import { grassFragmentShader, grassVertexShader } from '../shader/grass';
 import State from './State.class';
 import Model from '../interface/Model.interface';
-import Setting from './Setting.class';
 
-export default class Game extends Setting {
+export default class Game {
     window: Window
     state: State
 
     constructor(window: Window, state: State) {
-        super(window)
-        
         this.window = window
         this.state = state
     }
@@ -49,20 +47,24 @@ export default class Game extends Setting {
                 fog: scene.fog !== undefined
             }
         );
-        water.rotation.x = - Math.PI / 2;
-		scene.add( water );
+        water.rotation.x = - Math.PI / 2
+		scene.add(water)
 
         camera.position.set(0, 5, -10); // Position initiale de la caméra
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
+        camera.aspect = window.innerWidth / window.innerHeight
+        camera.updateProjectionMatrix()
         
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setSize(window.innerWidth, window.innerHeight)
 
-        this.window.document.body.appendChild(renderer.domElement);
+        this.window.document.body.appendChild(renderer.domElement)
 
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.target.set(0, 41, 0);
-        camera.position.set(0, 45, -10);
+        const controls = new OrbitControls(camera, renderer.domElement)
+        controls.enableZoom = false
+        controls.enablePan = false
+        controls.minPolarAngle = 1
+        controls.maxPolarAngle = 1
+        controls.target.set(0, 41, -10)
+        camera.position.set(0, 45, -20)
 
         this.state.setState('document', {
             scene,
@@ -75,19 +77,19 @@ export default class Game extends Setting {
 
         this.window.document.camera = camera
         this.window.document.renderer = renderer
-        this.window.addEventListener('resize', this.onWindowResize);
+        this.window.addEventListener('resize', this.onWindowResize)
 
         renderer.render(scene, camera)
     }
 
     public onWindowResize() {
-        window.document.camera.aspect = window.innerWidth / window.innerHeight;
-        window.document.camera.updateProjectionMatrix();
-        window.document.renderer.setSize(window.innerWidth, window.innerHeight);
+        window.document.camera.aspect = window.innerWidth / window.innerHeight
+        window.document.camera.updateProjectionMatrix()
+        window.document.renderer.setSize(window.innerWidth, window.innerHeight)
     }
 
     public async loadModels(models: Array<Model>) {
-        const loader = new GLTFLoader();
+        const loader = new GLTFLoader()
         const { scene } = this.state.getState('document')
         const mixer = new THREE.AnimationMixer(scene)
 
@@ -104,8 +106,19 @@ export default class Game extends Setting {
                 }
 
                 if (models[key].animations) {
-                    const animation = mixer.clipAction(model.animations[0], model.scene)
-                    this.state.setState(models[key].name + '_animation', animation)
+                    for (let i in models[key].animations) {
+                        const animationConfig = models[key].animations[i]
+                        const animation = model.animations.filter(a => a.name === animationConfig.name)
+
+                        if (animation) {
+                            const animationMixer = mixer.clipAction(animation[0], model.scene)
+
+                            if (animationConfig.startOnLoad)
+                                animationMixer.play()
+
+                            this.state.setState(animationConfig.name + '_animation', animationMixer)
+                        }
+                    }
                 }
 
                 if (models[key].position) {
@@ -127,7 +140,8 @@ export default class Game extends Setting {
                     {
                         name: models[key].name,
                         scene: model.scene,
-                        hitbox: !models[key].hide ? new THREE.Box3().setFromObject(model.scene) : null
+                        hitbox: !models[key].hide ? new THREE.Box3().setFromObject(model.scene) : null,
+                        config: models[key]
                     }
                 ])
             }

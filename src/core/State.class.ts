@@ -27,7 +27,7 @@ export default class State {
         return this.getModelsWithoutPlayer().filter(model => model.hitbox)
     }
 
-    public getLabels(): any {
-        return this.getModelsWithoutPlayer().filter(model => model.name.startsWith('label_'))
+    public getClickableModels(): any {
+        return this.getModelsWithoutPlayer().filter(model => model.config.clickable)
     }
 }

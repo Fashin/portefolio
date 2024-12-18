@@ -4,7 +4,7 @@ import State from './State.class';
 export default class ControlPlayer {
     MOVING_PROPERTIES: Object
     MOVING_APPLICATION: Object
-    SPEED: number = 50
+    SPEED: number = 10
 
     // Tmp data
     walkDirection = new THREE.Vector3()
@@ -51,19 +51,20 @@ export default class ControlPlayer {
 
     public handleMovement(state: any, camera: any, controls: any, delta: any) {
         const player_control = state.getState('player_control')
-        const models = state.getModelsWithHitbox()
         const player = state.getModel('player')
-        const player_animation = state.getState('player_animation')
+        const runing_animation = state.getState('runing_animation')
+        const hidle_animation = state.getState('hidle_animation')
         const movements = Object.keys(player_control).filter(prop => (player_control[prop])).join('+')
 
         // User dont move
         if (movements.length === 0 || !this.MOVING_APPLICATION.hasOwnProperty(movements)) {
-            player_animation.reset().fadeIn(.2).play()
+            hidle_animation.play()
+            runing_animation.reset().fadeIn(.2).play()
             
             return;
         }
         else 
-            player_animation.fadeOut(.2)
+            runing_animation.fadeOut(.2)
 
         const angleYCameraDirection = Math.atan2(
             (camera.position.x - player.scene.position.x), 

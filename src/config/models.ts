@@ -6,10 +6,14 @@ export const models: Array<Model> = [
         name: 'player',
         path: '/models/player.glb',
         scale: [.2, .2, .2],
-        animations: true,
-        position: new THREE.Vector3(0, 37.6, 0),
+        animations: [
+            { name: 'runing', startOnLoad: false },
+            { name: 'hidle', startOnLoad: false }
+        ],
+        position: new THREE.Vector3(0, 37.6, -10),
         hide: false,
-        castShadow: false
+        castShadow: false,
+        clickable: false
     },
     {
         name: 'cliff',
@@ -18,6 +22,29 @@ export const models: Array<Model> = [
         animations: false,
         position: false,
         hide: false,
-        castShadow: true
+        castShadow: true,
+        clickable: false
+    },
+    {
+        name: 'slime',
+        path: '/models/slime.glb',
+        scale: [5, 5, 5],
+        animations: [
+            { name: 'waiting', startOnLoad: true }
+        ],
+        position: new THREE.Vector3(0, 37.6, 10),
+        hide: false,
+        castShadow: false,
+        clickable: true
+    },
+    {
+        name: 'firecamp',
+        path: '/models/firecamp.glb',
+        scale: [0.5, 0.5, 0.5],
+        animations: false,
+        position: new THREE.Vector3(0, 37.6, 0),
+        hide: false,
+        castShadow: false,
+        clickable: true
     }
 ]
