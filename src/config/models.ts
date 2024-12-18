@@ -45,6 +45,6 @@ export const models: Array<Model> = [
         position: new THREE.Vector3(0, 37.6, 0),
         hide: false,
         castShadow: false,
-        clickable: true
+        clickable: false
     }
 ]
