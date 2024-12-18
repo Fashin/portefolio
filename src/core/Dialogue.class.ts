@@ -66,35 +66,39 @@ export default class Dialogue {
         
         if (!container || !list) return
 
-        for (let i in projects) {
-            const data = projects[i]
-            const div = document.createElement('div')
-            div.classList.add('project-list-index')
-            div.setAttribute('redirect', data.website.url)
-            const dom = `
-                <div class="flex flex-col rounded hover:bg-slate-500/50 cursor-pointer">
-                    <div class="flex justify-center items-center mt-2">
-                    <img src="/logo/${data.picture}" height="250" width="250" alt="">
-                </div>
-                <div class="flex flex-col text-white justify-center items-center p-4">
-                    <h3 class="text-2xl font-bold mt-2">${data.title}</h3>
-                    <p class="mt-2 text-center">${data.description}</p>
-                    <a class="underline underline-offset-4 mt-2" href="https://${data.website.url}">${data.website.text}</a>
-                </div>
-            `
-            div.innerHTML = dom
-            list.appendChild(div)
+        console.log(list.children.length)
+        
+        if (list.children.length === 0) {
+            for (let i in projects) {
+                const data = projects[i]
+                const div = document.createElement('div')
+                div.classList.add('project-list-index')
+                div.setAttribute('redirect', data.website.url)
+                const dom = `
+                    <div class="flex flex-col rounded hover:bg-slate-500/50 cursor-pointer mx-4 min-h-96 h-96">
+                        <div class="flex justify-center items-center mt-2 h-48 px-8">
+                            <img src="/logo/${data.picture}" class="${data.picture_custom_size ?? 'w-full'} h-full object-contain" alt="">
+                        </div>
+                        <div class="flex flex-col text-white justify-center items-center p-4">
+                            <h3 class="text-2xl font-bold mt-2">${data.title}</h3>
+                            <p class="mt-2 text-center">${data.description}</p>
+                            <a class="underline underline-offset-4 mt-2" href="https://${data.website.url}">${data.website.text}</a>
+                        </div>
+                    </div>
+                `
+                div.innerHTML = dom
+                list.appendChild(div)
+            }
+    
+            const elements = document.getElementsByClassName('project-list-index')
+    
+            for (let i in elements)
+                if (elements[i] instanceof HTMLElement)
+                    elements[i].addEventListener('click', (evt) => {
+                        window.open('https://' + elements[i].getAttribute('redirect'), '_blank')
+                    })
         }
-
-        const elements = document.getElementsByClassName('project-list-index')
-
-        for (let i in elements)
-            if (elements[i] instanceof HTMLElement)
-                elements[i].addEventListener('click', (evt) => {
-                    window.open('https://' + elements[i].getAttribute('redirect'), '_blank')
-                })
-            
-
+        
         container.style.display = 'block'
     }
 }

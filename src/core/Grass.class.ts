@@ -22,7 +22,7 @@ export default class Grass {
             if (child.name !== 'highground') return
 
             let grassCount = 0
-            const maxGrassCount = 10000
+            const maxGrassCount = 20000
             const positions = child.geometry.attributes.position.array
             const modelMatrix = child.matrixWorld
             const box = new THREE.Box3().setFromObject(child)

@@ -28,10 +28,10 @@ function animate() {
 
     if (!loaders || !loaders.models) return;
 
-    if (!loaders.load_grass) {
-        const grass = new Grass(state)
-        return;
-    }
+    // if (!loaders.load_grass) {
+    //     const grass = new Grass(state)
+    //     return;
+    // }
 
     if (!loaders.load_fire) {
         const fire = new Fire(state)
@@ -44,7 +44,7 @@ function animate() {
     }
     
     water.material.uniforms['time'].value += 1.0 / 60.0;
-    grassMaterial.uniforms.time.value += 0.02;
+    // grassMaterial.uniforms.time.value += 0.02;
     fireMaterial.uniforms.time.value += 0.05;
 
     controlGravity.handleGravity(state)
