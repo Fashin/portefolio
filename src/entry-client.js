@@ -1,12 +1,12 @@
-import State from './src/core/State.class';
-import Game from './src/core/Game.class';
-import ControlPlayer from './src/core/ControlPlayer.class';
+import State from './core/State.class';
+import Game from './core/Game.class';
+import ControlPlayer from './core/ControlPlayer.class';
 import * as THREE from 'three';
-import { models } from './src/config/models';
-import ControlGravity from './src/core/ControlGravity.class';
-import Dialogue from './src/core/Dialogue.class';
-import Grass from './src/core/Grass.class';
-import Fire from './src/core/Fire.class';
+import { models } from './config/models';
+import ControlGravity from './core/ControlGravity.class';
+import Dialogue from './core/Dialogue.class';
+import Grass from './core/Grass.class';
+import Fire from './core/Fire.class';
 
 const state = new State()
 const game = new Game(window, state)

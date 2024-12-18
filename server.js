@@ -9,7 +9,7 @@ const base = process.env.BASE || '/'
 // Cached production assets
 const templateHtml = isProduction
   ? await fs.readFile('./dist/client/index.html', 'utf-8')
-  : 'index.html'
+  : ''
 
 // Create http server
 const app = express()
@@ -33,7 +33,7 @@ if (!isProduction) {
 }
 
 // Serve HTML
-app.use('*all', async (req, res) => {
+app.use('*', async (req, res) => {
   try {
     const url = req.originalUrl.replace(base, '')
 
