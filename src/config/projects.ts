@@ -33,7 +33,7 @@ export const projects = [
         picture: 'delicorner.png',
         description: '',
         website: {
-            url: 'www.delicorner.co',
+            url: 'delicorner.co',
             text: 'delicorner.co'
         }
     },
