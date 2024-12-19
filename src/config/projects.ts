@@ -56,5 +56,65 @@ export const projects = [
             url: 'www.dipli.com/fr',
             text: 'dipli.com'
         }
+    },
+    {
+        title: 'Absolutely French',
+        picture: 'absolutely-french.png',
+        picture_custom_size: 'w-40',
+        description: '',
+        website: {
+            url: 'www.absolutely-french.eu/',
+            text: 'absolutely-french.eu'
+        }
+    },
+    {
+        title: 'Rize',
+        picture: 'rize.png',
+        picture_custom_size: 'w-32',
+        description: '',
+        website: {
+            url: 'www.rizeag.com',
+            text: 'rizeag.com'
+        }
+    },
+    {
+        title: 'Theodo',
+        picture: 'theodo.png',
+        picture_custom_size: 'w-40',
+        description: '',
+        website: {
+            url: 'www.theodo.fr/',
+            text: 'theodo.fr'
+        }
+    },
+    {
+        title: 'Lapierre Traiteur',
+        picture: 'lapierre-traiteur.png',
+        picture_custom_size: 'w-52',
+        description: '',
+        website: {
+            url: 'www.lapierretraiteur.com/',
+            text: 'lapierretraiteur.com/'
+        }
+    },
+    {
+        title: 'Digital.in',
+        picture: 'digital-in.png',
+        picture_custom_size: 'w-40',
+        description: '',
+        website: {
+            url: 'www.digitalin.co',
+            text: 'digitalin.co'
+        }
+    },
+    {
+        title: 'Air&Cosmos',
+        picture: 'air-cosmos.png',
+        picture_custom_size: 'w-40',
+        description: '',
+        website: {
+            url: 'www.air-cosmos.com/home',
+            text: 'air-cosmos.com'
+        }
     }
 ]

@@ -5,7 +5,7 @@ export function render(_url) {
 				<div id="header" class="flex justify-end">
 					<img id="close-project-action" src="/icons/cross.svg" class="h-4 w-4 cursor-pointer mt-2 mr-2" alt="">
 				</div>
-				<div class="flex justify-center justify-center items-center min-w-96 p-4 grid grid-cols-3" id="project-list">
+				<div class="flex justify-center justify-center items-center min-w-96 p-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4" id="project-list">
 					
 				</div>
 			</div>

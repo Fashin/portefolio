@@ -65,8 +65,6 @@ export default class Dialogue {
         const list = document.getElementById('project-list')
         
         if (!container || !list) return
-
-        console.log(list.children.length)
         
         if (list.children.length === 0) {
             for (let i in projects) {
